@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../model/User");
 const InfoS = require("../model/InfoS");
 const InfoA = require("../model/InfoA");
+const pool = require("express");
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -88,6 +89,69 @@ app.get('/api/users', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);  // Должно быть в консоли
+});
+
+
+
+// Дальше идет жесткое добавление и удаление данных
+
+app.put('/InfoA/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, description, img } = req.body;
+
+  try {
+    const result = await pool.query(
+        'UPDATE infoAs SET name = $1, description = $2, img = $3 WHERE id = $4 RETURNING *',
+        [name, description, img, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "InfoA not found" });
+    }
+
+    return res.json(result.rows[0]);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+app.delete('/InfoA/:id', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM infoAs WHERE id = $1', [req.params.id]);
+    res.json({success:true});
+  } catch (error) {
+    return  res.status(500).json({error: "Server error"});
+  }
+})
+
+app.get('/InfoA', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM infoAs');
+    return res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.get('/InfoA/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query('SELECT * FROM infoAs WHERE id = $1', [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "InfoA not found" });
+    }
+
+    return res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Server error" });
+  }
 });
 
 module.exports = router;
