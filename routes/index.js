@@ -36,8 +36,8 @@ app.post('/register', async (req, res) => {
       return res.status(400).json({message: 'User already exists'}); // Добавлен return
     }
     const hashaedPassword = await bcrypt.hash(password, 10);
-    // const infoA = await InfoA.create({name, description, img});
-    // const infoS = await InfoS.create({name, description, img});
+    // const infoA = await InfoA.create({name, description});
+    // const infoS = await InfoS.create({name, description});
     const user = await User.create({name, email, password: hashaedPassword});
     res.status(200).json({message: 'User registered successfully', user});
   }catch (err) {
@@ -97,12 +97,12 @@ app.listen(PORT, () => {
 
 app.put('/InfoA/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, description, img } = req.body;
+  const { name, description } = req.body;
 
   try {
     const result = await pool.query(
-        'UPDATE infoAs SET name = $1, description = $2, img = $3 WHERE id = $4 RETURNING *',
-        [name, description, img, id]
+        'UPDATE infoAs SET name = $1, description = $2,  WHERE id = $3 RETURNING *',
+        [name, description, id]
     );
 
     if (result.rows.length === 0) {
