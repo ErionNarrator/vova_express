@@ -13,11 +13,7 @@ const InfoS = sequelize.define('infoS', {
         allowNull: false,
         unique: true,
     },
-    img:{
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-    }
+
 
 })
 

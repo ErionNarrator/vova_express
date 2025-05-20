@@ -14,11 +14,7 @@ const InfoA = sequelize.define('infoA', {
         allowNull: false,
         unique: true,
     },
-    img:{
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-    }
+
 })
 
 module.exports = InfoA;
