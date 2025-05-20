@@ -47,21 +47,25 @@ app.post('/register', async (req, res) => {
 
 
 app.post('/login', async (req, res) => {
-  const {name, password} = req.body;
+  const { name, password } = req.body;
   try {
-    const user = await User.findOne({where:{name}});
+    const user = await User.findOne({ where: { name } });
     if (!user) {
-      return res.status(400).send({message: 'User does not exist'});
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
-    if (!isPasswordMatch) {
-      return res.status(401).send({message: 'User does not match'});
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
-    const token = jwt.sign({password: user.password}, process.env.JWT_SECRET, {expiresIn: '1d'});
-    console.log({message: 'Login successfully.', token});
+
+    // Генерация токена
+    const token = jwt.sign({ user:name,password:password }, process.env.JWT_SECRET || "WTF", { expiresIn: '1h' });
+    console.log('Generated Token:', token); // Логирование сгенерированного токена
+    res.json({ message: 'Login successful', token });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({error: error.message});
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
