@@ -95,63 +95,77 @@ app.listen(PORT, () => {
 
 // Дальше идет жесткое добавление и удаление данных
 
-app.put('/InfoA/:id', async (req, res) => {
-  const { id } = req.params;
-  const { name, description } = req.body;
-
+app.get('/infoA', async (req, res) => {
   try {
-    const result = await pool.query(
-        'UPDATE infoAs SET name = $1, description = $2,  WHERE id = $3 RETURNING *',
-        [name, description, id]
-    );
+    const allInfoA = await InfoA.findAll();
+    res.status(200).json(allInfoA);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "InfoA not found" });
+// Получение одной записи по ID
+app.get('/infoA/:id', async (req, res) => {
+  try {
+    const info = await InfoA.findByPk(req.params.id);
+    if (info) {
+      res.status(200).json(info);
+    } else {
+      res.status(404).json({ message: 'Record not found' });
     }
-
-    return res.json(result.rows[0]);
-
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: error.message });
   }
 });
 
-
-app.delete('/InfoA/:id', async (req, res) => {
+// Создание новой записи
+app.post('/infoA', async (req, res) => {
   try {
-    await pool.query('DELETE FROM infoAs WHERE id = $1', [req.params.id]);
-    res.json({success:true});
+    const newInfo = await InfoA.create({
+      name: req.body.name,
+      description: req.body.description
+    });
+    res.status(201).json(newInfo);
   } catch (error) {
-    return  res.status(500).json({error: "Server error"});
-  }
-})
-
-app.get('/InfoA', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM infoAs');
-    return res.json(result.rows);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Server error" });
+    res.status(400).json({ error: error.message });
   }
 });
 
-app.get('/InfoA/:id', async (req, res) => {
-  const { id } = req.params;
-
+// Обновление записи
+app.put('/infoA/:id', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM infoAs WHERE id = $1', [id]);
+    const [updated] = await InfoA.update({
+      name: req.body.name,
+      description: req.body.description
+    }, {
+      where: { id: req.params.id }
+    });
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "InfoA not found" });
+    if (updated) {
+      const updatedInfo = await InfoA.findByPk(req.params.id);
+      res.status(200).json(updatedInfo);
+    } else {
+      res.status(404).json({ message: 'Record not found' });
     }
-
-    return res.json(result.rows[0]);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Server error" });
+    res.status(400).json({ error: error.message });
   }
 });
 
+// Удаление записи
+app.delete('/infoA/:id', async (req, res) => {
+  try {
+    const deleted = await InfoA.destroy({
+      where: { id: req.params.id }
+    });
+
+    if (deleted) {
+      res.status(204).send();
+    } else {
+      res.status(404).json({ message: 'Record not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 module.exports = router;
