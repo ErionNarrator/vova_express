@@ -110,7 +110,7 @@ app.get('/infoA/:id', async (req, res) => {
     if (info) {
       res.status(200).json(info);
     } else {
-      res.status(404).json({ message: 'Record not found' });
+      res.status(404).json({ message: 'Запись не найдена' });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -142,7 +142,7 @@ app.put('/infoA/:id', async (req, res) => {
       const updatedInfo = await InfoA.findByPk(req.params.id);
       res.status(200).json(updatedInfo);
     } else {
-      res.status(404).json({ message: 'Record not found' });
+      res.status(404).json({ message: 'Запись не найдена' });
     }
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -158,7 +158,7 @@ app.delete('/infoA/:id', async (req, res) => {
     if (deleted) {
       res.status(204).send();
     } else {
-      res.status(404).json({ message: 'Record not found' });
+      res.status(404).json({ message: 'Запись не найдена' });
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
