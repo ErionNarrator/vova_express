@@ -104,7 +104,6 @@ app.get('/infoA', async (req, res) => {
   }
 });
 
-// Получение одной записи по ID
 app.get('/infoA/:id', async (req, res) => {
   try {
     const info = await InfoA.findByPk(req.params.id);
@@ -118,7 +117,6 @@ app.get('/infoA/:id', async (req, res) => {
   }
 });
 
-// Создание новой записи
 app.post('/infoA', async (req, res) => {
   try {
     const newInfo = await InfoA.create({
@@ -131,7 +129,6 @@ app.post('/infoA', async (req, res) => {
   }
 });
 
-// Обновление записи
 app.put('/infoA/:id', async (req, res) => {
   try {
     const [updated] = await InfoA.update({
@@ -152,7 +149,6 @@ app.put('/infoA/:id', async (req, res) => {
   }
 });
 
-// Удаление записи
 app.delete('/infoA/:id', async (req, res) => {
   try {
     const deleted = await InfoA.destroy({
