@@ -1,5 +1,5 @@
 const {DataTable, DataTypes} = require('sequelize');
-const sequelize = require('../db/databese');
+const sequelize = require('../db/database');
 
 module.exports = sequelize;
 
